@@ -1,0 +1,43 @@
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Étape 1 : Vérification du code source
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Étape 2 : Configuration de JDK et Maven
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: 17
+        distribution: 'temurin'
+
+    # Étape 3 : Compilation de l'application
+    - name: Compile the application
+      run: mvn compile
+
+    # Étape 4 : Lancer les tests unitaires
+    - name: Run unit tests
+      run: mvn test
+
+    # Étape 5 : Création du fichier JAR
+    - name: Package the application
+      run: mvn package
+      env:
+        JAVA_HOME: ${{ runner.tool_cache.java-17 }}
+
+    # Étape 6 : Création de l'image Docker
+    - name: Build Docker image
+      run: |
+        docker build -t my-spring-app:latest .
