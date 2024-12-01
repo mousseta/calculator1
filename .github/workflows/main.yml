@@ -54,3 +54,12 @@ jobs:
       run: |
         docker tag my-spring-app:latest ${{ secrets.DOCKER_USERNAME }}/my-spring-app:latest
         docker push ${{ secrets.DOCKER_USERNAME }}/my-spring-app:latest
+
+    # Étape 9 : Déploiement de l'application
+    - name: Deploy Docker container 
+      run: |
+          docker pull ${{ secrets.DOCKER_USERNAME }}/my-spring-app:latest
+          docker stop my-spring-app || true
+          docker rm my-spring-app || true
+          docker run -d --name my-spring-app -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/my-spring-app:latest
+    
